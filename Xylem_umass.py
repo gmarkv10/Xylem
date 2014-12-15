@@ -7,20 +7,23 @@ path = os.getcwd() + '\\'
 #######################
 #Function delcarations#
 #######################
-def myFunc():
-    for item in range(s.ncols):
-        sheet1.write(1, item, s.cell(1, item).value)
 
-    book.save(path + 'projected.xls')
-
-    print "we good"
 
 #def grow_out(years):
     
-#def init_table():
+    
+def init_table():
+    global RATES
+    excel_table = open_workbook(path + 'AnnualPercentageGrowth.xls')
+    s1 = excel_table.sheet_by_index(0)
+    for iclass in range(47):
+        for dbh in range(13):
+            RATES[iclass][dbh] = s1.cell(1+ iclass,1 + dbh).value
+       
 
 def getCell(r, c):
     return s.cell(r, c).value
+
 def setFields(row):
     global loc
     global species
@@ -40,9 +43,11 @@ def setFields(row):
     
 
 def test():
-    print isValidEntry(656456)
+    global RATES
+    init_table()
+    print RATES
 
-#def isValidEntry(species, common, dbh, height, spread, cond, loc):
+#tests for validty of the line, also calls setFields!
 def isValidEntry(row):
     if(row > s.nrows):
         return False
@@ -65,6 +70,9 @@ def isValidEntry(row):
 #########################    
 #Pre-REPL instantiations#
 #########################
+
+#Version 0.0.2 will read these in from an external file for adjustabililty
+
 SPECIES_COL = 1
 COMMON_COL  = 2
 DBH_COL     = 3
@@ -83,6 +91,11 @@ spread = -1
 cond   = -1
 loc    = -1
 
+#2D growth increment array that is initialize with `init_table` above
+#accessed by RATES[<incremenent class>][<dbh>]
+#Read in from Kim D. Coder's paper on Annual Percentage Growth in xls form
+RATES = [[0 for i in range(13)] for i in range(47)]
+
 wb = open_workbook(path + 'umass.xls')
 s = wb.sheet_by_index(0)
 
@@ -99,7 +112,7 @@ print "WELCOME TO XYLEM Version 0.0.1 for the UMASS CAMPUS"
 while(cmd != 'quit' and cmd != 'q'):
     cmd = raw_input("> ")
     if(cmd == 'proj'):
-        myFunc()
+        print "Doing a lot of important projetion work"
     elif(cmd == 'test'):
         test()
     elif(cmd == 'quit' or cmd == 'q'):
@@ -111,4 +124,7 @@ while(cmd != 'quit' and cmd != 'q'):
         print years
         #grow_out(years)
     else:
-        print 'USAGE: proj'
+        print "USAGE: 'grow' -- grow the inventory by some number of years"
+        print "       'quit' or 'q' -- exit the program"
+        print "       'setcol <species> <common> <dbh> <height> <spread> <condition> <loc rating> --"
+        print "             tell the program which columns the fields are in"
