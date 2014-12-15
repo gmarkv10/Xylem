@@ -8,8 +8,30 @@ path = os.getcwd() + '\\'
 #Function delcarations#
 #######################
 
+def project(years):
+    for r in range(s.nrows):
+        project_row(r, years)
 
-#def grow_out(years):
+def project_row(row, years):
+    if(isValidEntry(row)):
+        print_row(row, True)
+        #get get dbh (already set) and increment class based on fields
+        #get increment based on RATES 
+        print 'Oh we good'
+    else:
+        print_row(row, False)
+        #reprint this row
+        print 'We got prollems'
+
+def print_row(row, valid):
+    for c in range(s.ncols):
+        sheet1.write(row, c, s.cell(row, c).value)
+    #above code, just prints the line,
+    #the below code writes over the old dbh and puts in the new one for a valid enrty
+    if(valid):
+        sheet1.write(row, DBH_COL, dbh)
+    
+    
     
     
 def init_table():
@@ -43,10 +65,8 @@ def setFields(row):
     
 
 def test():
-    global RATES
-    init_table()
-    print RATES
-
+    project(4)
+    
 #tests for validty of the line, also calls setFields!
 def isValidEntry(row):
     if(row > s.nrows):
@@ -67,9 +87,34 @@ def isValidEntry(row):
     if( loc  == empty_cell.value):
         return False
     return True
+
+def getDbhClassFromDBH(dbh):
+    if(dbh > 0 and dbh < 40):
+        return dbh
+    elif( dbh > 40 and dbh <= 100):
+        return incofFive(dbh)  #only listed in incs of 5 after dbh>40, see Kim Coder's article
+    else return "!CRITICAL: Invalid DBH"
+
+def incofFive(num):
+    mod = num % 5
+        if(mod == 0):
+	    return num
+	elif( mod >= 3):
+	    return num + (5 - mod)
+	else:
+	    return num - mod
+
+def getGrowthClassFromCond(spread, cond, loc):
+    return 0
 #########################    
 #Pre-REPL instantiations#
 #########################
+print "WELCOME TO XYLEM Version 0.0.1 for the UMASS CAMPUS"
+print "getting things ready..."
+#Startup sequence
+
+
+
 
 #Version 0.0.2 will read these in from an external file for adjustabililty
 
@@ -102,13 +147,14 @@ s = wb.sheet_by_index(0)
 book = Workbook()
 sheet1 = book.add_sheet('Sheet 1')
 
+init_table()
 
-
+print "all set, type any non-command for usage"
 #######################################
 #REPL code, will run until termination#
 #######################################
 cmd = ""
-print "WELCOME TO XYLEM Version 0.0.1 for the UMASS CAMPUS"
+
 while(cmd != 'quit' and cmd != 'q'):
     cmd = raw_input("> ")
     if(cmd == 'proj'):
