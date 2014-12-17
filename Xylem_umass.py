@@ -11,17 +11,18 @@ path = os.getcwd() + '\\'
 def project(years):
     for r in range(s.nrows):
         project_row(r, years)
+    book.save(path + 'ProjectedTreeData.xls')
 
 def project_row(row, years):
     if(isValidEntry(row)):
+        dbhClass = int(getDbhClassFromDBH(dbh))
+        gClass   = int(getGrowthClassFromCond())
+        dbh =  dbh + (dbh*RATES[gClass][dbhClass])
         print_row(row, True)
-        #get get dbh (already set) and increment class based on fields
-        #get increment based on RATES 
-        print 'Oh we good'
+        
     else:
         print_row(row, False)
-        #reprint this row
-        print 'We got prollems'
+
 
 def print_row(row, valid):
     for c in range(s.ncols):
@@ -38,9 +39,11 @@ def init_table():
     global RATES
     excel_table = open_workbook(path + 'AnnualPercentageGrowth.xls')
     s1 = excel_table.sheet_by_index(0)
-    for iclass in range(47):
-        for dbh in range(13):
-            RATES[iclass][dbh] = s1.cell(1+ iclass,1 + dbh).value
+    for y in range(100):
+        for x in range(13):
+            RATES[x][y+1] = s1.cell(y, x).value
+    
+    #print s1.cell(99,12).value
        
 
 def getCell(r, c):
@@ -65,8 +68,8 @@ def setFields(row):
     
 
 def test():
-    project(4)
-    
+    project_row(3, 6)
+        
 #tests for validty of the line, also calls setFields!
 def isValidEntry(row):
     if(row > s.nrows):
@@ -76,7 +79,8 @@ def isValidEntry(row):
         return False
     if(common  == empty_cell.value):
         return False
-    if(dbh  == empty_cell.value or dbh == 0):
+    #may be changed later to handle all dbh's
+    if(dbh  == empty_cell.value or dbh < 6):
         return False
     if( height  == empty_cell.value or height == 0):
         return False
@@ -89,22 +93,23 @@ def isValidEntry(row):
     return True
 
 def getDbhClassFromDBH(dbh):
-    if(dbh > 0 and dbh < 40):
+    if(dbh > 0 and dbh <= 40):
         return dbh
     elif( dbh > 40 and dbh <= 100):
         return incofFive(dbh)  #only listed in incs of 5 after dbh>40, see Kim Coder's article
-    else return "!CRITICAL: Invalid DBH"
+    else:
+        return "!CRITICAL: Invalid DBH"
 
 def incofFive(num):
     mod = num % 5
-        if(mod == 0):
-	    return num
-	elif( mod >= 3):
-	    return num + (5 - mod)
-	else:
-	    return num - mod
+    if(mod == 0):
+        return num
+    elif( mod >= 3):
+        return num + (5 - mod)
+    else:
+        return num - mod
 
-def getGrowthClassFromCond(spread, cond, loc):
+def getGrowthClassFromCond():
     return 0
 #########################    
 #Pre-REPL instantiations#
@@ -139,7 +144,7 @@ loc    = -1
 #2D growth increment array that is initialize with `init_table` above
 #accessed by RATES[<incremenent class>][<dbh>]
 #Read in from Kim D. Coder's paper on Annual Percentage Growth in xls form
-RATES = [[0 for i in range(13)] for i in range(47)]
+RATES = [[0 for y in range(101)] for x in range(13)]
 
 wb = open_workbook(path + 'umass.xls')
 s = wb.sheet_by_index(0)
@@ -162,6 +167,7 @@ while(cmd != 'quit' and cmd != 'q'):
     elif(cmd == 'test'):
         test()
     elif(cmd == 'quit' or cmd == 'q'):
+        
         print " "
         #I'll show myself out
     elif(cmd == 'grow' or cmd == 'project'):
