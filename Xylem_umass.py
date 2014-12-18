@@ -9,14 +9,17 @@ path = os.getcwd() + '\\'
 #######################
 
 def project(years):
-    for r in range(s.nrows):
+    #for r in range(s.nrows):
+    for r in range(5):
         project_row(r, years)
     book.save(path + 'ProjectedTreeData.xls')
 
 def project_row(row, years):
+    global dbh
+    global spread, height, cond, loc
     if(isValidEntry(row)):
         dbhClass = int(getDbhClassFromDBH(dbh))
-        gClass   = int(getGrowthClassFromCond())
+        gClass   = int(getGrowthClassFromCond(spread, height, cond, loc))
         dbh =  dbh + (dbh*RATES[gClass][dbhClass])
         print_row(row, True)
         
@@ -26,11 +29,16 @@ def project_row(row, years):
 
 def print_row(row, valid):
     for c in range(s.ncols):
-        sheet1.write(row, c, s.cell(row, c).value)
+        if(c == DBH_COL):
+            if(valid):
+                sheet1.write(row, DBH_COL, dbh)
+            else:
+                sheet1.write(row, DBH_COL, getCell(row, DBH_COL))
+        else:
+            sheet1.write(row, c, s.cell(row, c).value)
     #above code, just prints the line,
     #the below code writes over the old dbh and puts in the new one for a valid enrty
-    if(valid):
-        sheet1.write(row, DBH_COL, dbh)
+
     
     
     
@@ -68,8 +76,12 @@ def setFields(row):
     
 
 def test():
-    project_row(3, 6)
-        
+    global dbh
+    ROW = 1
+    print getCell(ROW, 0)
+    print isValidEntry(ROW)
+    project_row(ROW, 1)
+    book.save(path + 'ProjectedTreeData.xls')
 #tests for validty of the line, also calls setFields!
 def isValidEntry(row):
     if(row > s.nrows):
@@ -109,8 +121,45 @@ def incofFive(num):
     else:
         return num - mod
 
-def getGrowthClassFromCond():
-    return 0
+def getGrowthClassFromCond(spread, height, cond, loc):
+    #BY INDEX of column vs growth increments per inch:
+    # 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  | 10 | 11 | 12
+    #---|---|---|---|---|---|---|---|---|----|----|----|----
+    # 1 |1.5| 2 |2.5| 3 | 4 | 5 |7.5|10 |12.5| 15 |17.5| 20
+    index = 0
+    if(spread/height >= 4):
+        index += 4
+    elif(spread/height >= 3):
+        index += 2
+    elif(spread/height >= 2):
+        index += 1
+    #MAX possible 4
+    if(cond > 75):
+        index += 0
+    elif(cond > 50 ):
+        index += 1
+    elif(cond > 25):
+        index += 2
+    elif(cond > 0):
+        index += 3
+    else:
+        index += 4
+    #MAX possible 8
+    if(loc > 75):
+        index += 0
+    elif(loc > 50 ):
+        index += 1
+    elif(loc > 25):
+        index += 2
+    elif(loc > 0):
+        index += 3
+    else:
+        index += 4
+    #MAX possible 12
+    
+    return index
+
+
 #########################    
 #Pre-REPL instantiations#
 #########################
@@ -167,14 +216,12 @@ while(cmd != 'quit' and cmd != 'q'):
     elif(cmd == 'test'):
         test()
     elif(cmd == 'quit' or cmd == 'q'):
-        
         print " "
         #I'll show myself out
     elif(cmd == 'grow' or cmd == 'project'):
         print " How many years of growth?"
         years = input(">> ")
-        print years
-        #grow_out(years)
+        project(years)
     else:
         print "USAGE: 'grow' -- grow the inventory by some number of years"
         print "       'quit' or 'q' -- exit the program"
