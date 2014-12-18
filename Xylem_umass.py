@@ -9,8 +9,9 @@ path = os.getcwd() + '\\'
 #######################
 
 def project(years):
-    #for r in range(s.nrows):
-    for r in range(5):
+    #print_row(0, False)
+    for r in range(1, s.nrows):
+        print r
         project_row(r, years)
     book.save(path + 'ProjectedTreeData.xls')
 
@@ -20,6 +21,7 @@ def project_row(row, years):
     if(isValidEntry(row)):
         dbhClass = int(getDbhClassFromDBH(dbh))
         gClass   = int(getGrowthClassFromCond(spread, height, cond, loc))
+        print type(dbh*RATES[gClass][dbhClass])
         dbh =  dbh + (dbh*RATES[gClass][dbhClass])
         print_row(row, True)
         
@@ -77,11 +79,13 @@ def setFields(row):
 
 def test():
     global dbh
-    ROW = 1
+    ROW = 297
     print getCell(ROW, 0)
     print isValidEntry(ROW)
     project_row(ROW, 1)
     book.save(path + 'ProjectedTreeData.xls')
+
+    
 #tests for validty of the line, also calls setFields!
 def isValidEntry(row):
     if(row > s.nrows):
