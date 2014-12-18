@@ -2,6 +2,7 @@
 from xlrd import open_workbook, empty_cell
 from xlwt import Workbook
 import os
+import time
 
 path = os.getcwd() + '\\'
 #######################
@@ -9,20 +10,21 @@ path = os.getcwd() + '\\'
 #######################
 
 def project(years):
-    #print_row(0, False)
+    print_row(0, False)
     for r in range(1, s.nrows):
-        print r
         project_row(r, years)
-    book.save(path + 'ProjectedTreeData.xls')
+    timestamp = time.strftime('%Y%m%d%H%M%S')
+    book.save(path + str(years) + 'Projected'+timestamp+'.xls')
+
 
 def project_row(row, years):
     global dbh
     global spread, height, cond, loc
     if(isValidEntry(row)):
-        dbhClass = int(getDbhClassFromDBH(dbh))
-        gClass   = int(getGrowthClassFromCond(spread, height, cond, loc))
-        print type(dbh*RATES[gClass][dbhClass])
-        dbh =  dbh + (dbh*RATES[gClass][dbhClass])
+        for y in range(years):
+            dbhClass = int(getDbhClassFromDBH(dbh))
+            gClass   = int(getGrowthClassFromCond(spread, height, cond, loc))
+            dbh      = dbh + (dbh*RATES[gClass][dbhClass])
         print_row(row, True)
         
     else:
@@ -52,7 +54,7 @@ def init_table():
     for y in range(100):
         for x in range(13):
             RATES[x][y+1] = s1.cell(y, x).value
-    
+        
     #print s1.cell(99,12).value
        
 
@@ -60,31 +62,23 @@ def getCell(r, c):
     return s.cell(r, c).value
 
 def setFields(row):
-    global loc
-    global species
-    global common
-    global dbh
-    global height
-    global spread
-    global cond
+    global loc, species, common, dbh, height, spread, cond
     species = getCell(row, SPECIES_COL)
     common  = getCell(row, COMMON_COL)
-    dbh     = getCell(row, DBH_COL)
-    height  = getCell(row, HEIGHT_COL)
-    spread  = getCell(row, SPREAD_COL)
-    cond    = getCell(row, COND_COL)
-    loc     = getCell(row, LOC_COL)
+    dbh     = float(getCell(row, DBH_COL))
+    height  = float(getCell(row, HEIGHT_COL))
+    spread  = float(getCell(row, SPREAD_COL))
+    cond    = float(getCell(row, COND_COL))
+    loc     = float(getCell(row, LOC_COL))
     
     
 
 def test():
-    global dbh
-    ROW = 297
-    print getCell(ROW, 0)
-    print isValidEntry(ROW)
-    project_row(ROW, 1)
-    book.save(path + 'ProjectedTreeData.xls')
-
+    
+    project_row(3, 2)
+    project_row(4, 3)
+    book.save(path + 'Projecte.xls')
+    
     
 #tests for validty of the line, also calls setFields!
 def isValidEntry(row):
@@ -96,16 +90,17 @@ def isValidEntry(row):
     if(common  == empty_cell.value):
         return False
     #may be changed later to handle all dbh's
-    if(dbh  == empty_cell.value or dbh < 6):
+    if(dbh  == empty_cell.value or dbh < 6 or type(dbh) is not float):
         return False
-    if( height  == empty_cell.value or height == 0):
+    if( height  == empty_cell.value or height == 0 or type(height) is not float):
         return False
-    if( spread  == empty_cell.value or spread == 0):
+    if( spread  == empty_cell.value or spread == 0 or type(spread) is not float):
         return False
-    if( cond  == empty_cell.value):
+    if( cond  == empty_cell.value or type(cond) is not float):
         return False
-    if( loc  == empty_cell.value):
+    if( loc  == empty_cell.value or type(loc) is not float):
         return False
+    
     return True
 
 def getDbhClassFromDBH(dbh):
@@ -113,6 +108,10 @@ def getDbhClassFromDBH(dbh):
         return dbh
     elif( dbh > 40 and dbh <= 100):
         return incofFive(dbh)  #only listed in incs of 5 after dbh>40, see Kim Coder's article
+    #an entry greater than 100 ( the highest DBH in Coder's chart ) will get
+    #pidgeon holed into 100
+    elif( dbh > 100 ):
+        return 100
     else:
         return "!CRITICAL: Invalid DBH"
 
