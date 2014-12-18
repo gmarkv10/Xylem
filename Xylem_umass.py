@@ -63,14 +63,24 @@ def getCell(r, c):
 
 def setFields(row):
     global loc, species, common, dbh, height, spread, cond
-    species = getCell(row, SPECIES_COL)
-    common  = getCell(row, COMMON_COL)
-    dbh     = float(getCell(row, DBH_COL))
-    height  = float(getCell(row, HEIGHT_COL))
-    spread  = float(getCell(row, SPREAD_COL))
-    cond    = float(getCell(row, COND_COL))
-    loc     = float(getCell(row, LOC_COL))
-    
+    try:
+        species = getCell(row, SPECIES_COL)
+        common  = getCell(row, COMMON_COL)
+        dbh     = float(getCell(row, DBH_COL))
+        height  = float(getCell(row, HEIGHT_COL))
+        spread  = float(getCell(row, SPREAD_COL))
+        cond    = float(getCell(row, COND_COL))
+        loc     = float(getCell(row, LOC_COL))
+    except ValueError:
+        #On excpetion: let isValid entry decide validity of raw
+        #cell value, trivially it will return false
+        species = getCell(row, SPECIES_COL)
+        common  = getCell(row, COMMON_COL)
+        dbh     = getCell(row, DBH_COL)
+        height  = getCell(row, HEIGHT_COL)
+        spread  = getCell(row, SPREAD_COL)
+        cond    = getCell(row, COND_COL)
+        loc     = getCell(row, LOC_COL)
     
 
 def test():
