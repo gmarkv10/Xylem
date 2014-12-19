@@ -4,6 +4,7 @@ from xlwt import Workbook
 import os
 import time
 
+
 path = os.getcwd() + '\\'
 #######################
 #Function delcarations#
@@ -45,17 +46,49 @@ def print_row(row, valid):
 
     
     
+INIT_VARS = False
+def init_vars():
+    global INIT_VARS
+    global inventory,SPECIES_COL, COMMON_COL, DBH_COL, HEIGHT_COL, SPREAD_COL, COND_COL, LOC_COL
+    global wb, s
+    try:
+        obj = open(path + 'src\\config.txt', "r")
+        inventory = obj.readline()
+        inventory = inventory.rstrip('\n')
+        wb = open_workbook(path + inventory)
+        s = wb.sheet_by_index(0)
+        SPECIES_COL = int(obj.readline())
+        COMMON_COL  = int(obj.readline())
+        DBH_COL     = int(obj.readline())
+        HEIGHT_COL  = int(obj.readline())
+        SPREAD_COL  = int(obj.readline())
+        COND_COL    = int(obj.readline())
+        LOC_COL     = int(obj.readline())
+        
+        INIT_VARS = True
+    except IOError:
+        print "!ERROR: " + inventory + " does not exist in this folder"
+        print "solution: run `setup` from terminal, being sure to give the right filename"
     
+def set_vars():
+    print "doing a lot of important settings work"
     
 def init_table():
+    global INIT_VARS
+    #keeps init_table from being called before init_vars since it is dependant on the variables it initializes
+    if(not INIT_VARS):
+        print "Startup sequence run incorrectly, please run `startup` from terminal"
+        return
     global RATES
-    excel_table = open_workbook(path + 'AnnualPercentageGrowth.xls')
+    excel_table = open_workbook(path + 'src\\AnnualPercentageGrowth.xls')
     s1 = excel_table.sheet_by_index(0)
     for y in range(100):
         for x in range(13):
             RATES[x][y+1] = s1.cell(y, x).value
         
     #print s1.cell(99,12).value
+
+    
        
 
 def getCell(r, c):
@@ -84,10 +117,16 @@ def setFields(row):
     
 
 def test():
-    
-    project_row(3, 2)
-    project_row(4, 3)
-    book.save(path + 'Projecte.xls')
+    obj = open(path + 'src\\config.txt', "r")
+    f = obj.readline() #umass.xls\n
+    f = f.rstrip('\n')
+    wb = open_workbook(path + f)
+    s = wb.sheet_by_index(0)
+    print getCell(1,3)
+
+
+    #project_row(4, 5)
+    #book.save(path + 'Projecte.xls')
     
     
 #tests for validty of the line, also calls setFields!
@@ -172,26 +211,27 @@ def getGrowthClassFromCond(spread, height, cond, loc):
     
     return index
 
+def startup():
+    init_vars()
+    init_table()
 
 #########################    
 #Pre-REPL instantiations#
 #########################
-print "WELCOME TO XYLEM Version 0.0.1 for the UMASS CAMPUS"
+print "WELCOME TO XYLEM Version 0.0.2 for the UMASS CAMPUS"
 print "getting things ready..."
 #Startup sequence
 
+inventory = ""
 
 
-
-#Version 0.0.2 will read these in from an external file for adjustabililty
-
-SPECIES_COL = 1
-COMMON_COL  = 2
-DBH_COL     = 3
-HEIGHT_COL  = 4
-SPREAD_COL  = 5
-COND_COL    = 7
-LOC_COL     = 9
+SPECIES_COL = -1
+COMMON_COL  = -2
+DBH_COL     = -3
+HEIGHT_COL  = -4
+SPREAD_COL  = -5
+COND_COL    = -7
+LOC_COL     = -9
 
 #(above and below) python vars for working with fields  
   
@@ -208,9 +248,12 @@ loc    = -1
 #Read in from Kim D. Coder's paper on Annual Percentage Growth in xls form
 RATES = [[0 for y in range(101)] for x in range(13)]
 
-wb = open_workbook(path + 'umass.xls')
-s = wb.sheet_by_index(0)
 
+wb = ''#= open_workbook(path + inventory)
+s = ''#= wb.sheet_by_index(0)      These assignments can now be found in init_vars()
+##############
+init_vars()  #Initializing those fields 
+##############
 book = Workbook()
 sheet1 = book.add_sheet('Sheet 1')
 
@@ -235,6 +278,10 @@ while(cmd != 'quit' and cmd != 'q'):
         print " How many years of growth?"
         years = input(">> ")
         project(years)
+    elif(cmd == 'startup'):
+        startup()
+    elif(cmd == 'setup'):
+        set_vars()
     else:
         print "USAGE: 'grow' -- grow the inventory by some number of years"
         print "       'quit' or 'q' -- exit the program"
