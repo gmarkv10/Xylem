@@ -11,11 +11,16 @@ path = os.getcwd() + '\\'
 #######################
 
 def project(years):
-    print_row(0, False)
-    for r in range(1, s.nrows):
-        project_row(r, years)
-    timestamp = time.strftime('%Y%m%d%H%M%S')
-    book.save(path + str(years) + 'Projected'+timestamp+'.xls')
+    try:
+        print_row(0, False)
+        for r in range(1, s.nrows):
+            project_row(r, years)
+        timestamp = time.strftime('%Y%m%d%H%M%S')
+        book.save(path + str(years) + 'Projected'+timestamp+'.xls')
+    except AttributeError:
+        print "!ERROR: You are using an invalid inventory name"
+        print "solution: run `setup` from terminal, being sure to give the right filename"
+        print "after completing a setup, be sure to run a `reset` command
 
 
 def project_row(row, years):
@@ -69,6 +74,7 @@ def init_vars():
     except IOError:
         print "!ERROR: " + inventory + " does not exist in this folder"
         print "solution: run `setup` from terminal, being sure to give the right filename"
+        print "after completing a setup, be sure to run a `reset` command
     
 def set_vars():
     global path
