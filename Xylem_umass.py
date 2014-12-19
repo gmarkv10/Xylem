@@ -64,15 +64,40 @@ def init_vars():
         SPREAD_COL  = int(obj.readline())
         COND_COL    = int(obj.readline())
         LOC_COL     = int(obj.readline())
-        
+        obj.close()
         INIT_VARS = True
     except IOError:
         print "!ERROR: " + inventory + " does not exist in this folder"
         print "solution: run `setup` from terminal, being sure to give the right filename"
     
 def set_vars():
+    global path
     print "doing a lot of important settings work"
-    
+    obj = open(path + 'src\\config.txt', "w")
+    ipath = raw_input("What is the inventory name? ")
+    obj.write(ipath + '.xls\n')
+    print "Columns can be given as upper or lower case"
+    setCol = raw_input("What column is the SPECIES NAME? ")
+    obj.write(ctoi(setCol)+'\n')
+    setCol = raw_input("What column is the COMMON NAME? ")
+    obj.write(ctoi(setCol)+'\n')
+    setCol = raw_input("What column is the DBH? ")
+    obj.write(ctoi(setCol)+'\n')
+    setCol = raw_input("What column is the HEIGHT? ")
+    obj.write(ctoi(setCol)+'\n')
+    setCol = raw_input("What column is the SPREAD? ")
+    obj.write(ctoi(setCol)+'\n')
+    setCol = raw_input("What column is the CONDITION? ")
+    obj.write(ctoi(setCol)+'\n')
+    setCol = raw_input("What column is the LOCATION RATING? ")
+    obj.write(ctoi(setCol)+'\n')
+    #init_vars()
+
+def ctoi(c):
+    c = c.lower()
+    return str(ord(c) - 97)
+
+
 def init_table():
     global INIT_VARS
     #keeps init_table from being called before init_vars since it is dependant on the variables it initializes
@@ -117,14 +142,12 @@ def setFields(row):
     
 
 def test():
-    obj = open(path + 'src\\config.txt', "r")
-    f = obj.readline() #umass.xls\n
-    f = f.rstrip('\n')
-    wb = open_workbook(path + f)
-    s = wb.sheet_by_index(0)
-    print getCell(1,3)
-
-
+    i = 0
+    while(i < 5):
+        s = raw_input(">>> ")
+        print ctoi(s)
+        i += 1
+    #init_vars()
     #project_row(4, 5)
     #book.save(path + 'Projecte.xls')
     
@@ -211,7 +234,7 @@ def getGrowthClassFromCond(spread, height, cond, loc):
     
     return index
 
-def startup():
+def reset():
     init_vars()
     init_table()
 
@@ -278,12 +301,13 @@ while(cmd != 'quit' and cmd != 'q'):
         print " How many years of growth?"
         years = input(">> ")
         project(years)
-    elif(cmd == 'startup'):
-        startup()
+    elif(cmd == 'reset'):
+        reset()
     elif(cmd == 'setup'):
         set_vars()
     else:
         print "USAGE: 'grow' -- grow the inventory by some number of years"
         print "       'quit' or 'q' -- exit the program"
-        print "       'setcol <species> <common> <dbh> <height> <spread> <condition> <loc rating> --"
-        print "             tell the program which columns the fields are in"
+        print "       'setup' -- prompt to reset path and columns for inventory"
+        print "       'reset' -- restablish connection with growth table and inventory, use after setup"
+        
