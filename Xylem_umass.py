@@ -10,6 +10,7 @@ path = os.getcwd() + '\\'
 #Function delcarations#
 #######################
 
+#contains the loop that goes over all inventory entries, stamps each newly projected file with years ahead and time created.
 def project(years):
     try:
         print_row(0, False)
@@ -20,9 +21,9 @@ def project(years):
     except AttributeError:
         print "!ERROR: You are using an invalid inventory name"
         print "solution: run `setup` from terminal, being sure to give the right filename"
-        print "after completing a setup, be sure to run a `reset` command
+        print "after completing a setup, be sure to run a `reset` command"
 
-
+#uses helper functions to project an entry, and print row to write to the projected file
 def project_row(row, years):
     global dbh
     global spread, height, cond, loc
@@ -30,13 +31,15 @@ def project_row(row, years):
         for y in range(years):
             dbhClass = int(getDbhClassFromDBH(dbh))
             gClass   = int(getGrowthClassFromCond(spread, height, cond, loc))
+            print (RATES[gClass][dbhClass])
             dbh      = dbh + (dbh*RATES[gClass][dbhClass])
         print_row(row, True)
         
     else:
         print_row(row, False)
 
-
+#print_row simply reprints a row to the new file if not all the requirements for projection are met
+#otherwise it prints the row with the projected dbh made from project_row
 def print_row(row, valid):
     for c in range(s.ncols):
         if(c == DBH_COL):
@@ -46,12 +49,25 @@ def print_row(row, valid):
                 sheet1.write(row, DBH_COL, getCell(row, DBH_COL))
         else:
             sheet1.write(row, c, s.cell(row, c).value)
-    #above code, just prints the line,
-    #the below code writes over the old dbh and puts in the new one for a valid enrty
 
+#Reads in the excel version of Kim Coder's article into an array which is indexed in O(1) time, increasing efficiency
+def init_table():
+    global INIT_VARS
+    #keeps init_table from being called before init_vars since it is dependant on the variables it initializes
+    if(not INIT_VARS):
+        print "Startup sequence run incorrectly, please run `startup` from terminal"
+        return
+    global RATES
+    excel_table = open_workbook(path + 'src\\AnnualPercentageGrowth.xls')
+    s1 = excel_table.sheet_by_index(0)
+    for y in range(100):
+        for x in range(13):
+            RATES[x][y+1] = s1.cell(y, x).value
+        
+    #print s1.cell(99,12).value
     
-    
-INIT_VARS = False
+INIT_VARS = False   #Failsafe to make sure the variables are initialized at run time
+#read in the info from config.txt, one note, this needs to be run before init_table()
 def init_vars():
     global INIT_VARS
     global inventory,SPECIES_COL, COMMON_COL, DBH_COL, HEIGHT_COL, SPREAD_COL, COND_COL, LOC_COL
@@ -70,12 +86,13 @@ def init_vars():
         COND_COL    = int(obj.readline())
         LOC_COL     = int(obj.readline())
         obj.close()
-        INIT_VARS = True
+        INIT_VARS = True  
     except IOError:
         print "!ERROR: " + inventory + " does not exist in this folder"
         print "solution: run `setup` from terminal, being sure to give the right filename"
-        print "after completing a setup, be sure to run a `reset` command
-    
+        print "after completing a setup, be sure to run a `reset` command"
+
+#overwrite the program info in config.txt for a new inventory
 def set_vars():
     global path
     print "doing a lot of important settings work"
@@ -99,32 +116,15 @@ def set_vars():
     obj.write(ctoi(setCol)+'\n')
     #init_vars()
 
-def ctoi(c):
-    c = c.lower()
-    return str(ord(c) - 97)
 
 
-def init_table():
-    global INIT_VARS
-    #keeps init_table from being called before init_vars since it is dependant on the variables it initializes
-    if(not INIT_VARS):
-        print "Startup sequence run incorrectly, please run `startup` from terminal"
-        return
-    global RATES
-    excel_table = open_workbook(path + 'src\\AnnualPercentageGrowth.xls')
-    s1 = excel_table.sheet_by_index(0)
-    for y in range(100):
-        for x in range(13):
-            RATES[x][y+1] = s1.cell(y, x).value
-        
-    #print s1.cell(99,12).value
+
 
     
        
 
-def getCell(r, c):
-    return s.cell(r, c).value
-
+#called in isValidEntry() since that is called before each projection,
+#thereby resetting the fields
 def setFields(row):
     global loc, species, common, dbh, height, spread, cond
     try:
@@ -147,15 +147,7 @@ def setFields(row):
         loc     = getCell(row, LOC_COL)
     
 
-def test():
-    i = 0
-    while(i < 5):
-        s = raw_input(">>> ")
-        print ctoi(s)
-        i += 1
-    #init_vars()
-    #project_row(4, 5)
-    #book.save(path + 'Projecte.xls')
+
     
     
 #tests for validty of the line, also calls setFields!
@@ -181,6 +173,16 @@ def isValidEntry(row):
     
     return True
 
+#easy access to cell vals
+def getCell(r, c):
+    return s.cell(r, c).value
+
+#used in set_vars function to attain the numerical location of the column from the letter notation
+def ctoi(c):
+    c = c.lower()
+    return str(ord(c) - 97)
+
+
 def getDbhClassFromDBH(dbh):
     if(dbh > 0 and dbh <= 40):
         return dbh
@@ -192,7 +194,8 @@ def getDbhClassFromDBH(dbh):
         return 100
     else:
         return "!CRITICAL: Invalid DBH"
-
+    
+#helper function to index dbh class, called in getDbhClassfromDBH()
 def incofFive(num):
     mod = num % 5
     if(mod == 0):
@@ -202,6 +205,7 @@ def incofFive(num):
     else:
         return num - mod
 
+#Called by project_row() returning the appropriate* index for growth increment class
 def getGrowthClassFromCond(spread, height, cond, loc):
     #BY INDEX of column vs growth increments per inch:
     # 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  | 10 | 11 | 12
@@ -240,9 +244,15 @@ def getGrowthClassFromCond(spread, height, cond, loc):
     
     return index
 
+#used after a set_vars() call to re-read the fields a user has passed in
+#reset() is called separately to alleviate risk of a simultaneous reading and writing to config.txt 
 def reset():
     init_vars()
     init_table()
+
+#Test function, called from terminal 
+def test():
+    project_row(5, 5)
 
 #########################    
 #Pre-REPL instantiations#
@@ -296,9 +306,7 @@ cmd = ""
 
 while(cmd != 'quit' and cmd != 'q'):
     cmd = raw_input("> ")
-    if(cmd == 'proj'):
-        print "Doing a lot of important projetion work"
-    elif(cmd == 'test'):
+    if(cmd == 'test'):
         test()
     elif(cmd == 'quit' or cmd == 'q'):
         print " "
