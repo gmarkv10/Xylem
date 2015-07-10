@@ -52,16 +52,27 @@ Run the program and run `setup`
    
    Here is a sample of an init_table already filled in:
    `global INIT_VARS
+   
     #keeps init_table from being called before init_vars since it is dependant on the variables it initializes
+
     if(not INIT_VARS):
-        print "Startup sequence run incorrectly, please run `startup` from terminal"
+    
+        print "Startup sequence run incorrectly, please run 'startup' from terminal"
+
         return
+
     global RATES
+
     excel_table = open_workbook(path + 'src\\AnnualPercentageGrowth.xls')
+
     s1 = excel_table.sheet_by_index(0)
+    
     for y in range(100):
+
         for x in range(13):
+        
             RATES[x][y+1] = s1.cell(y, x).value`
+
    
 >Line 49 `init_vars`
    A very important method, this uses the config.txt file in the src directory to read in what columns correspond to what data at program start.  Must be modified for each additional field the progammer considers in their projection.
