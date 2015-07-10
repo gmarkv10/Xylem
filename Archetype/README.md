@@ -51,7 +51,8 @@ Run the program and run `setup`
    Use the rates table to your advantage in memory.  Index rates in way that can be accessed based on other factors about the tree and set up that logic here.
    
    Here is a sample of an init_table already filled in:
-   `global INIT_VARS
+   `
+   global INIT_VARS
    
     #keeps init_table from being called before init_vars since it is dependant on the variables it initializes
 
