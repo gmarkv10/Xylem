@@ -3,13 +3,14 @@ from xlrd import open_workbook, empty_cell
 from xlwt import Workbook
 import os
 import time
+import random
 
 
 path = os.getcwd() + '\\'
 #######################
 #Function delcarations#
 #######################
-
+runs = 3
 #contains the loop that goes over all inventory entries, stamps each newly projected file with years ahead and time created.
 def project(years):
     try:
@@ -18,6 +19,7 @@ def project(years):
             project_row(r, years)
         timestamp = time.strftime('%Y%m%d%H%M%S')
         book.save(path + str(years) + 'Projected'+timestamp+'.xls')
+        print inventory + " projected successfully for " + str(years) + " years"
     except AttributeError:
         print "!ERROR: You are using an invalid inventory name"
         print "solution: run `setup` from terminal, being sure to give the right filename"
@@ -26,12 +28,13 @@ def project(years):
 #uses helper functions to project an entry, and print row to write to the projected file
 def project_row(row, years):
     global dbh
-    global spread, height, cond, loc
+    global spread, height, cond, loc, space
     if(isValidEntry(row)):
         for y in range(years):
             dbhClass = int(getDbhClassFromDBH(dbh))
-            gClass   = int(getGrowthClassFromCond(spread, height, cond, loc))
-            print (RATES[gClass][dbhClass])
+            gClass   = int(getGrowthClassFromCond(spread, height, cond, loc, space))
+            #print (RATES[gClass][dbhClass])
+            #print "Row " + str(row) + " -- Class " + str(gClass)
             dbh      = dbh + (dbh*RATES[gClass][dbhClass])
         print_row(row, True)
         
@@ -70,14 +73,16 @@ INIT_VARS = False   #Failsafe to make sure the variables are initialized at run 
 #read in the info from config.txt, one note, this needs to be run before init_table()
 def init_vars():
     global INIT_VARS
-    global inventory,SPECIES_COL, COMMON_COL, DBH_COL, HEIGHT_COL, SPREAD_COL, COND_COL, LOC_COL
-    global wb, s
+    global inventory,SPECIES_COL, COMMON_COL, DBH_COL, HEIGHT_COL, SPREAD_COL, COND_COL, LOC_COL, SPACE_COL
+    global wb, s, runs
     try:
         obj = open(path + 'src\\config.txt', "r")
         inventory = obj.readline()
         inventory = inventory.rstrip('\n')
-        wb = open_workbook(path + inventory)
-        s = wb.sheet_by_index(0)
+        wb = open_workbook(path + inventory) #READ
+        s = wb.sheet_by_index(0)             #READ
+        book = Workbook()                    #WRITE  
+        sheet1 = book.add_sheet('Sheet 1', cell_overwrite_ok=True)   #WRITE
         SPECIES_COL = int(obj.readline())
         COMMON_COL  = int(obj.readline())
         DBH_COL     = int(obj.readline())
@@ -85,6 +90,7 @@ def init_vars():
         SPREAD_COL  = int(obj.readline())
         COND_COL    = int(obj.readline())
         LOC_COL     = int(obj.readline())
+        SPACE_COL   = int(obj.readline())
         obj.close()
         INIT_VARS = True  
     except IOError:
@@ -114,6 +120,8 @@ def set_vars():
     obj.write(ctoi(setCol)+'\n')
     setCol = raw_input("What column is the LOCATION RATING? ")
     obj.write(ctoi(setCol)+'\n')
+    setCol = raw_input("What column is the GROWSPACE DESCRIPTOR? ")
+    obj.write(ctoi(setCol)+'\n')
     #init_vars()
 
 
@@ -126,7 +134,7 @@ def set_vars():
 #called in isValidEntry() since that is called before each projection,
 #thereby resetting the fields
 def setFields(row):
-    global loc, species, common, dbh, height, spread, cond
+    global loc, species, common, dbh, height, spread, cond, space
     try:
         species = getCell(row, SPECIES_COL)
         common  = getCell(row, COMMON_COL)
@@ -135,6 +143,7 @@ def setFields(row):
         spread  = float(getCell(row, SPREAD_COL))
         cond    = float(getCell(row, COND_COL))
         loc     = float(getCell(row, LOC_COL))
+        space   = getCell(row, SPACE_COL)
     except ValueError:
         #On excpetion: let isValid entry decide validity of raw
         #cell value, trivially it will return false
@@ -145,6 +154,7 @@ def setFields(row):
         spread  = getCell(row, SPREAD_COL)
         cond    = getCell(row, COND_COL)
         loc     = getCell(row, LOC_COL)
+        space   = getCell(row, SPACE_COL)
     
 
 
@@ -206,43 +216,70 @@ def incofFive(num):
         return num - mod
 
 #Called by project_row() returning the appropriate* index for growth increment class
-def getGrowthClassFromCond(spread, height, cond, loc):
+def getGrowthClassFromCond(spread, height, cond, loc, space):
     #BY INDEX of column vs growth increments per inch:
     # 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  | 10 | 11 | 12
     #---|---|---|---|---|---|---|---|---|----|----|----|----
     # 1 |1.5| 2 |2.5| 3 | 4 | 5 |7.5|10 |12.5| 15 |17.5| 20
     index = 0
-    if(spread/height >= 4):
-        index += 4
-    elif(spread/height >= 3):
-        index += 2
-    elif(spread/height >= 2):
-        index += 1
+    #print space + " -> " + str(spaceValue(space))
+    index += spaceValue(space)
     #MAX possible 4
-    if(cond > 75):
+    if(cond > 95):
         index += 0
-    elif(cond > 50 ):
+    elif(cond > 70 ):
         index += 1
-    elif(cond > 25):
+    elif(cond > 50):
         index += 2
-    elif(cond > 0):
+    elif(cond > 25):
         index += 3
+    elif(cond > 0):
+        index += 4
     else:
         index += 4
     #MAX possible 8
-    if(loc > 75):
+    if(loc > 89):
         index += 0
-    elif(loc > 50 ):
+    elif(loc > 74 ):
         index += 1
-    elif(loc > 25):
+    elif(loc > 49):
         index += 2
-    elif(loc > 0):
-        index += 3
     else:
         index += 4
     #MAX possible 12
     
     return index
+
+#must be changed for each new environment
+def spaceValue(growspace):
+    if(growspace == "lndscp plant bed" ):
+        return 2
+    elif(growspace == "median strip"):
+        return 3
+    elif(growspace == "lawn area"):
+        return 1
+    elif(growspace == "terrain"):
+        return random.randint(1,4)
+    elif(growspace == "landscape island"):
+        return random.randint(2,3)
+    elif(growspace == "planter box"):
+        return 3
+    elif(growspace == "building close"):
+        return 3
+    elif(growspace == "restricted"):
+        return 4
+    elif(growspace == "foundation plant"):
+        return 3
+    elif(growspace == "hight ft traffic"):
+        return random.randint(2,3)
+    elif(growspace == "street tree"):
+        return 4
+    elif(growspace == "unrestricted"):
+        return 0
+    elif(growspace == "hedge row"):
+        return 2
+    else:
+        return random.randint(0,4) #keep for a nieve even distro
 
 #used after a set_vars() call to re-read the fields a user has passed in
 #reset() is called separately to alleviate risk of a simultaneous reading and writing to config.txt 
@@ -252,7 +289,7 @@ def reset():
 
 #Test function, called from terminal 
 def test():
-    project_row(5, 5)
+    print getCell(2,23) == "median strip"
 
 #########################    
 #Pre-REPL instantiations#
@@ -271,6 +308,7 @@ HEIGHT_COL  = -4
 SPREAD_COL  = -5
 COND_COL    = -7
 LOC_COL     = -9
+SPACE_COL   = -23
 
 #(above and below) python vars for working with fields  
   
@@ -281,6 +319,7 @@ height = -1
 spread = -1
 cond   = -1
 loc    = -1
+space  = "a"
 
 #2D growth increment array that is initialize with `init_table` above
 #accessed by RATES[<incremenent class>][<dbh>]
@@ -294,7 +333,7 @@ s = ''#= wb.sheet_by_index(0)      These assignments can now be found in init_va
 init_vars()  #Initializing those fields 
 ##############
 book = Workbook()
-sheet1 = book.add_sheet('Sheet 1')
+sheet1 = book.add_sheet('Sheet 1', cell_overwrite_ok=True)
 
 init_table()
 
@@ -315,6 +354,7 @@ while(cmd != 'quit' and cmd != 'q'):
         print " How many years of growth?"
         years = input(">> ")
         project(years)
+        init_vars()
     elif(cmd == 'reset'):
         reset()
     elif(cmd == 'setup'):
