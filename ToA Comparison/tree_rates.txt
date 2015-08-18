@@ -1,0 +1,131 @@
+Red Maple:0.52
+apple, common:0.37
+arborvitae, eastern:0.37
+ash, green:0.52
+ash, white:0.37
+aspen, bigtooth:0.52
+aspen, quaking:0.52
+beech, American:0.21
+beech, European:0.21
+birch, European white:0.22
+birch, gray:0.22
+birch, paper:0.22
+birch, river:0.22
+birch, sweet:0.22
+birch, yellow:0.22
+catalpa, northern:0.52
+cherry, Japanese flowering:0.22
+cherry,  Sargent:0.4
+cherry,  black:0.52
+cherry,  pin:0.26
+cherry/plum, spp.:0.14
+chestnut, Chinese:0.46
+chokecherry, common:0.11
+cottonwood, eastern:0.52
+crabapple, flowering:0.37
+cypress, Leyland:0.37
+dogwood, Kousa:0.06
+dogwood, corneliancherry:0.01
+dogwood, flowering:0.35
+dogwood, spp.:0.35
+elm, American:0.52
+elm, Siberian:0.52
+elm, spp.:0.37
+fir, balsam:0.22
+fir, white:0.22
+hawthorn, Washington:0.37
+hawthorn, spp.:0.37
+hemlock, eastern:0.37
+hickory, mockernut:0.22
+hickory, pignut:0.22
+hickory, shagbark:0.22
+honeylocust, thornless:0.52
+hornbeam, American:0.15
+horsechestnut, red:0.25
+larch, American:0.37
+larch, European:0.37
+lilac, Japanese tree:0.3
+linden, American:0.37
+linden, littleleaf:0.37
+locust, black:0.51
+magnolia, saucer:0.24
+magnolia, umbrella:0.32
+maple, Amur:0.37
+maple, Japanese:0.19
+maple, Norway:0.52
+maple, hedge:0.07
+maple, paperbark:0.19
+maple, red:0.52
+maple, silver:0.52
+maple, sugar:0.22
+maple, sycamore:0.37
+mountainash, American:0.37
+mountainash, European:0.37
+mulberry, red:0.37
+mulberry, white:0.37
+oak, black:0.37
+oak, bur:0.22
+oak, chestnut:0.22  
+oak, northern red:0.37
+oak, pin:0.52
+oak, swamp white:0.52
+oak, white:0.37
+pear, Callery:0.37
+pear, common:0.52
+pine, Austrian:0.37
+pine, Japanese umbrella:0.22
+pine, Scotch:0.52
+pine, eastern white:0.52
+pine, mugo:0.1
+pine, red:0.22
+planetree, London:0.52
+plum, American:0.14
+plum, cherry:0.12
+poplar, white:0.52
+redbud, eastern:0.01
+redcedar, eastern:0.22
+serviceberry, downy:0.1
+serviceberry, shadblow:0.1
+serviceberry, spp.:0.1
+smoketree, American:0.1
+spruce, Colorado:0.22
+spruce, Norway:0.22
+spruce, white:0.22
+sumac, staghorn:0.31
+sweetgum, American:0.4
+sycamore, American:0.52
+walnut, black:0.52
+willow, black:0.52
+willow, weeping:0.52
+yew, spp.:0.16
+zelkova, Japanese:0.22
+Amur corktree:0.37
+Amur maackia:0.03
+COMMON
+	Cherry:0.37
+Hemlock:0.37
+Hinoki Cypress:0.37
+Kousa Dogwood:0.06
+Norway Maple:0.52
+Paper Birch:0.22
+Pin Oak:0.52
+Red Maple:0.52
+Red Oak:0.37
+Russian-olive:0.2
+Shagbark Hickory:0.22
+Silver Maple:0.52
+Sugar Maple:0.22
+White Spruce:0.22
+arborvitae spp.:0.37
+blackgum:0.37
+boxelder:0.22
+butternut:0.22
+dawn redwood:0.4
+ginkgo:0.22
+honeylocust:0.52
+horsechestnut:0.25
+katsuratree:0.22
+tree of heaven:0.13
+tuliptree:0.17
+unknown tree:0.3
+yellowwood:0.37
