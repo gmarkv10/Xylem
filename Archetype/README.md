@@ -102,17 +102,17 @@ The installation will go as follows: download Python, download and unpack the ne
 ####Download and unpack the necessary libraries
 These steps can be applied to both [xlrd][1] and [xlwt][2], you may do them separately or one at a time
 + Set up a folder at the root of your hard-drive
-    -open Windows command prompt by going to Start->Search and typing cmd, open the first result
-	-type `mkdir C:\installers`
-	-type `cd C:\installers` you have created a folder from command line, minimize this window
+    - open Windows command prompt by going to Start->Search and typing cmd, open the first result
+	- type `mkdir C:\installers`
+	- type `cd C:\installers` you have created a folder from command line, minimize this window
 + Click on one of the links above to take you to the download page. (it will be a compressed file which will require work on your end)
-    -you will have to unpack its contents, so make sure you know where the .tar.gz file is stored after download
-	-if you do not have a utility for such files handy, [read the following for Windows][6]
-	-if possible, extract the contents into the C:\installers folder you made before.  Or, simply copy the resulting folder so your installers directory has two entries: C:\installers\xlrd-0.9.X and C:\installer\xlwt-0.7.X (the numbers will vary)
+    - you will have to unpack its contents, so make sure you know where the .tar.gz file is stored after download
+	- if you do not have a utility for such files handy, [read the following for Windows][6]
+	- if possible, extract the contents into the C:\installers folder you made before.  Or, simply copy the resulting folder so your installers directory has two entries: C:\installers\xlrd-0.9.X and C:\installer\xlwt-0.7.X (the numbers will vary)
 + From the C:\installers folder, change into each library's new folder and install your packages in Python
-    -type `cd C:\installers\<either xlrd-X.X.X or xlwt-X.X.X>`
-	-type `C:\Python27\python setup.py install`
-	-some information will be outputted, repeat for the second library
+    - type `cd C:\installers\<either xlrd-X.X.X or xlwt-X.X.X>`
+	- type `C:\Python27\python setup.py install`
+	- some information will be outputted, repeat for the second library
 + To test your installation open up a Python Command Line (search your computer), and type `from xlrd import *` and/or `from xlwt import *`.  If both of those commands run without any result, you have completed your installation.
 
 
