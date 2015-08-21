@@ -5,7 +5,7 @@
 
 This is open source software being worked on by Gabe Markarian for Independent Study work being done at UMass Amherst in association with Prof. Rick Harper
 
-In this archetype edition, a useful skeleton is provided in the hopes of making future versions of Xylem easier to understand and replicate.  Most methods and variable are left blank, this version stands as simply a way to grasp one possible working control flow but additions and modifications are encouraged.  
+In this archetype edition, a useful skeleton is provided in the hopes of making future versions of Xylem easier to understand and replicate.  Most methods and variables are left blank, additions and modifications are encouraged.  
 
 ##ASSUMPTIONS ABOUT DEVELOPING FROM ARCHETYPE
 
@@ -89,11 +89,36 @@ Run the program and run `setup`
   -  If the field is required for a projection, be sure to make a case for it in `isValidEntry` that way if the field is unusable, the projection won't work.
   -  Finally, prompt the user to set the column in the event they change inventories in `set_vars` on line 68.  After that you are done!
   
-  
+##Starting from scratch
+###For Windows users and developers laid out step by step
 
+The installation will go as follows: download Python, download and unpack the necessary packages, install the packages into your Python download, and test your installation.
+
+####Download Python 2.7
++ Go the the [Python Downloads page][5] and select the ***Windows x86-64 MSI installer***
++ Save and run the file that the site prompts you with
++ The installer will walk you through the installation of Python 2.7
+
+####Download and unpack the necessary libraries
+These steps can be applied to both [xlrd][1] and [xlwt][2], you may do them separately or one at a time
++ Set up a folder at the root of your hard-drive
+    -open Windows command prompt by going to Start->Search and typing cmd, open the first result
+	-type `mkdir C:\installers`
+	-type `cd C:\installers` you have created a folder from command line, minimize this window
++ Click on one of the links above to take you to the download page. (it will be a compressed file which will require work on your end)
+    -you will have to unpack its contents, so make sure you know where the .tar.gz file is stored after download
+	-if you do not have a utility for such files handy, [read the following for Windows][6]
+	-if possible, extract the contents into the C:\installers folder you made before.  Or, simply copy the resulting folder so your installers directory has two entries: C:\installers\xlrd-0.9.X and C:\installer\xlwt-0.7.X (the numbers will vary)
++ From the C:\installers folder, change into each library's new folder and install your packages in Python
+    -type `cd C:\installers\<either xlrd-X.X.X or xlwt-X.X.X>`
+	-type `C:\Python27\python setup.py install`
+	-some information will be outputted, repeat for the second library
++ To test your installation open up a Python Command Line (search your computer), and type `from xlrd import *` and/or `from xlwt import *`.  If both of those commands run without any result, you have completed your installation.
 
 
 [1]:https://pypi.python.org/pypi/xlrd
 [2]:https://pypi.python.org/pypi/xlwt
 [3]:http://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop
 [4]:http://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them
+[5]:https://www.python.org/downloads/release/python-2710/
+[6]:http://www.wikihow.com/Extract-a-Gz-File
