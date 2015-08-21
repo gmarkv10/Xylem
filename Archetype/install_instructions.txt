@@ -1,0 +1,18 @@
+1. Set up a directory called C:\installers (or some other name of your
+choice).
+
+2. Download xlrd-0.7.1.zip from PyPI into that directory.
+
+3. Unzip it so that you get C:\installers\xlrd-0.7.1\etc etc
+
+4. Start up a Command Prompt window, and then do:
+
+    prompt> cd C:\installers\xlrd-0.7.1
+    prompt> c:\Python27\python setup.py install
+
+The last line above assumes that you are using Python 2.7 and have
+installed it in the default location ... if not, adjust accordingly.
+
+I'm doing some research on how to provide an installer (a .msi file,
+probably that will work on 64-bit Windows; in the meantime, the above
+should get you going.
